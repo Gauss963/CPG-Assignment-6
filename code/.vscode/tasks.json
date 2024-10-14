@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Fortran",
+            "type": "shell",
+            "command": "gfortran",
+            "args": [
+                "-o",
+                "epicentral",
+                "epicentral.f90",
+                "-L/usr/local/anaconda3/envs/FORTRAN/lib",
+                "-lpgplot",
+                "-lcpgplot",
+                "-lX11",
+                "-Wl,-rpath,/usr/local/anaconda3/envs/FORTRAN/lib"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
