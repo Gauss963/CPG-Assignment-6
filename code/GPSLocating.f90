@@ -7,6 +7,7 @@ program GPSLocating
     real(dp), allocatable :: X(:), solution(:)
     real(dp) :: D1, x1, y1, z1
     real(dp) :: det
+    
     ! For LAPACK routines
     integer :: info, nrhs, lda, ldb
 
@@ -16,7 +17,7 @@ program GPSLocating
     if (N < 4) then
         print *, 'At least 4 stations are required.'
         stop
-    endif
+    end if
 
     ! Allocate arrays
     allocate(xi(N), yi(N), zi(N), Di(N))
