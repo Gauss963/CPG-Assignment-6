@@ -187,7 +187,7 @@
 ## Task: The `Location program`
 
 1. **Input**
-   - Input N stations $(x_i,y_i,z_i)$ and distance D_i to target point.
+   - Input N stations $(x_i,y_i,z_i)$ and distance $D_i$ to target point.
 
 2. **Output**
    - Calculating the $(X,Y,Z)$ of target point. 
