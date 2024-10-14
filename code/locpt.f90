@@ -38,7 +38,7 @@ eps = EPSILON(1.0)
 
 !-----------------------------------------------------------------------
 n0 = n
-IF (x(1) == x(n) .AND. y(1) == y(n)) n0 = n - 1
+if (x(1) == x(n) .AND. y(1) == y(n)) n0 = n - 1
 pi = ATAN2(0.0, -1.0)
 pi2 = 2.0*pi
 tol = 4.0*eps*pi
@@ -47,39 +47,39 @@ m = 0
 
 u = x(1) - x0
 v = y(1) - y0
-IF (u == 0.0 .AND. v == 0.0) GO TO 20
-IF (n0 < 2) RETURN
+if (u == 0.0 .AND. v == 0.0) goto 20
+if (n0 < 2) return
 theta1 = ATAN2(v, u)
 
 sum = 0.0
 theta = theta1
-DO i = 2, n0
-  u = x(i) - x0
-  v = y(i) - y0
-  IF (u == 0.0 .AND. v == 0.0) GO TO 20
-  thetai = ATAN2(v, u)
-  
-  angle = ABS(thetai - theta)
-  IF (ABS(angle - pi) < tol) GO TO 20
-  IF (angle > pi) angle = angle - pi2
-  IF (theta > thetai) angle = -angle
-  sum = sum + angle
-  theta = thetai
-END DO
+do i = 2, n0
+    u = x(i) - x0
+    v = y(i) - y0
+    if (u == 0.0 .AND. v == 0.0) goto 20
+    thetai = ATAN2(v, u)
+
+    angle = ABS(thetai - theta)
+    if (ABS(angle - pi) < tol) goto 20
+    if (angle > pi) angle = angle - pi2
+    if (theta > thetai) angle = -angle
+    sum = sum + angle
+    theta = thetai
+end do
 
 angle = ABS(theta1 - theta)
-IF (ABS(angle - pi) < tol) GO TO 20
-IF (angle > pi) angle = angle - pi2
-IF (theta > theta1) angle = -angle
+if (ABS(angle - pi) < tol) goto 20
+if (angle > pi) angle = angle - pi2
+if (theta > theta1) angle = -angle
 sum = sum + angle
 
 !     SUM = 2*PI*M WHERE M IS THE WINDING NUMBER
 
 m = ABS(sum)/pi2 + 0.2
-IF (m == 0) RETURN
+if (m == 0) return
 l = 1
-IF (sum < 0.0) m = -m
-RETURN
+if (sum < 0.0) m = -m
+return
 
 !     (X0, Y0) IS ON THE BOUNDARY OF THE PATH
 

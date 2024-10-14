@@ -9,6 +9,7 @@
                 "-o",
                 "OnLands",
                 "OnLands.f90",
+                "locpt.f90",
                 "-L/usr/local/anaconda3/envs/FORTRAN/lib",
                 "-lpgplot",
                 "-lcpgplot",

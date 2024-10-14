@@ -55,4 +55,4 @@ subroutine xyfit(x, y, ndata, cept, slop, rms, r_cor, sdv)
     rms = sqrt(abs(errsum)) / float(ndata)
 
     return
-end
+end subroutine xyfit
