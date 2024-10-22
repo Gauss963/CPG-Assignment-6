@@ -109,6 +109,7 @@ program OnLands
             call pgsci(41)
             call pgsch(1.0)
             call pgpt1(EQ_X(i), EQ_Y(i), 3)
+            print *, 'Earthquake ', i, ' is on the contour boundary.'
         else
             call pgscr(43, 1.00, 0.498, 0.055)
             call pgsci(43)

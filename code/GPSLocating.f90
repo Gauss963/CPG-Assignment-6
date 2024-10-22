@@ -7,6 +7,9 @@ program GPSLocating
     real(dp), allocatable :: v_QC1(:), v_QC2(:), v_QC3(:), v_d(:), v_m(:)
     real(dp), allocatable :: m_Q(:,:), m_QT(:,:)
 
+    real(dp) :: m_LHS(3, 3)
+    real(dp) :: v_RHS()
+
     ! For LAPACK routine DGELS
     external :: DGELS
 
@@ -36,13 +39,17 @@ program GPSLocating
     end do
 
     ! Print the matrix to check
-    ! print *, 'Matrix Q:'
-    ! do k = 1, N
-    !     print *, m_Q(k, 1), m_Q(k, 2), m_Q(k, 3)
-    ! end do
+    print *, 'Matrix Q:'
+    do k = 1, N
+        print *, m_Q(k, 1), m_Q(k, 2), m_Q(k, 3)
+    end do
 
     m_QT = transpose(m_Q)
-    v_m = matmul(matmul(matmul(m_QT, m_q)**(-1), m_QT), v_d) ! Complete this part
+    v_m = matmul(matmul(matmul(m_QT, m_Q)**(-1), m_QT), v_d) ! Complete this part
+
+    m_LHS = matmul(m_QT, m_Q)
+
+    call solve_3x3()
 
 
     ! Output the result
