@@ -202,19 +202,19 @@ for $i = 1, 2, \cdots, n$. This can be written in matrix form as:
 
 $$
 \begin{pmatrix}
-q_{x_1} & q_{y_1} & q_{z_1} \\
-\vdots & \vdots & \vdots \\
+q_{x_1} & q_{y_1} & q_{z_1} \\\
+\vdots & \vdots & \vdots \\\
 q_{x_n} & q_{y_n} & q_{z_n}
 \end{pmatrix}
 \begin{pmatrix}
-m_x \\
-m_y \\
+m_x \\\
+m_y \\\
 m_z
 \end{pmatrix}
 =
 \begin{pmatrix}
-d_1 \\
-\vdots \\
+d_1 \\\
+\vdots \\\
 d_n
 \end{pmatrix}
 $$
