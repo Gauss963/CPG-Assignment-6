@@ -186,6 +186,48 @@
 
 ## Task: The `Location program`
 
+The linear system can be represented as:
+
+$$
+\overrightarrow{d} = \hat Q \cdot \overrightarrow{m}
+$$
+
+where:
+
+$$
+q_{x_i} m_x + q_{y_i} m_y + q_{z_i} m_z = d_i
+$$
+
+for $i = 1, 2, \cdots, n$. This can be written in matrix form as:
+
+$$
+\begin{bmatrix}
+q_{x_1} & q_{y_1} & q_{z_1} \\
+\vdots & \vdots & \vdots \\
+q_{x_n} & q_{y_n} & q_{z_n}
+\end{bmatrix}
+\begin{bmatrix}
+m_x \\
+m_y \\
+m_z
+\end{bmatrix}
+=
+\begin{bmatrix}
+d_1 \\
+\vdots \\
+d_n
+\end{bmatrix}
+$$
+
+Here, $\hat Q$ is an $n \times 3$ matrix, $\overrightarrow{m}$ is a $3 \times 1$ vector, and $\overrightarrow{d}$ is an $n \times 1$ vector.
+
+To solve for \(M\), we use the equation:
+
+$$ 
+\overrightarrow{m} =  \left( \hat Q^{T} \cdot \hat Q \right)^{-1} \cdot \hat Q^{T} \cdot \overrightarrow{d} 
+$$
+
+
 1. **Input**
    - Input N stations $(x_i,y_i,z_i)$ and distance $D_i$ to target point.
 
@@ -193,55 +235,55 @@
    - Calculating the $(X,Y,Z)$ of target point. 
    - Just like GPS location.
 3. **Output**
-   - I use my custom subroutine.
+   - I use my custom subroutine, and call `LAPAC` to do the work.
         ```FORTRAN
-        subroutine solve_3x3(A, B, X)
-            use, intrinsic :: iso_fortran_env
+        subroutine matrix_inverse(N, A, AINV, INFO)
             implicit none
-            
-            integer, parameter :: dp = real64
+            integer, intent(in) :: N
+            double precision, intent(in) :: A(N, N)
+            double precision, intent(out) :: AINV(N, N)
+            integer, intent(out) :: INFO
 
-            real(dp), intent(in) :: A(3, 3), B(3)
-            real(dp), intent(out) :: X(3)
-            real(dp) :: detA, detA1, detA2, detA3
-            real(dp), dimension(3, 3) :: A1, A2, A3
-            
+            integer, allocatable :: IPIV(:)
+            double precision, allocatable :: WORK(:)
+            integer :: LWORK
 
-            ! Compute determinant of A
-            detA = determinant_3x3(A)
-            if (abs(detA) < 1.0e-12_dp) then
-                print *, 'Matrix is singular or ill-conditioned.'
-                stop
+            AINV = A
+
+            allocate(IPIV(N))
+
+            ! LU decomposition
+            call dgetrf(N, N, AINV, N, IPIV, INFO)
+            if (INFO /= 0) then
+                print *, 'DGETRF error, INFO = ', INFO
+                deallocate(IPIV)
+                return
             end if
 
-            ! Replace columns of A with B to compute determinants
-            A1 = A
-            A1(:,1) = B
-            detA1 = determinant_3x3(A1)
-
-            A2 = A
-            A2(:,2) = B
-            detA2 = determinant_3x3(A2)
-
-            A3 = A
-            A3(:,3) = B
-            detA3 = determinant_3x3(A3)
-
-            ! Compute solutions
-            X(1) = detA1 / detA
-            X(2) = detA2 / detA
-            X(3) = detA3 / detA
+            LWORK = -1
+            allocate(WORK(1))
+            call dgetri(N, AINV, N, IPIV, WORK, LWORK, INFO)
+            if (INFO /= 0) then
+                print *, 'DGETRI error, INFO = ', INFO
+                deallocate(IPIV, WORK)
+                return
+            end if
 
 
-            contains
+            LWORK = int(WORK(1))
+            deallocate(WORK)
+            allocate(WORK(LWORK))
 
-            function determinant_3x3(M) result(det)
-            real(dp), intent(in) :: M(3,3)
-            real(dp) :: det
-            det = M(1,1)*(M(2,2)*M(3,3) - M(2,3)*M(3,2)) &
-                - M(1,2)*(M(2,1)*M(3,3) - M(2,3)*M(3,1)) &
-                + M(1,3)*(M(2,1)*M(3,2) - M(2,2)*M(3,1))
-            end function determinant_3x3
 
-        end subroutine solve_3x3
+            call dgetri(N, AINV, N, IPIV, WORK, LWORK, INFO)
+            if (INFO /= 0) then
+                print *, 'DGETRI error, INFO = ', INFO
+                deallocate(IPIV, WORK)
+                return
+            end if
+
+
+            deallocate(IPIV, WORK)
+
+            end subroutine matrix_inverse
         ```
