@@ -201,22 +201,22 @@ $$
 for $i = 1, 2, \cdots, n$. This can be written in matrix form as:
 
 $$
-\begin{bmatrix}
+\begin{pmatrix}
 q_{x_1} & q_{y_1} & q_{z_1} \\
 \vdots & \vdots & \vdots \\
 q_{x_n} & q_{y_n} & q_{z_n}
-\end{bmatrix}
-\begin{bmatrix}
+\end{pmatrix}
+\begin{pmatrix}
 m_x \\
 m_y \\
 m_z
-\end{bmatrix}
+\end{pmatrix}
 =
-\begin{bmatrix}
+\begin{pmatrix}
 d_1 \\
 \vdots \\
 d_n
-\end{bmatrix}
+\end{pmatrix}
 $$
 
 Here, $\hat Q$ is an $n \times 3$ matrix, $\overrightarrow{m}$ is a $3 \times 1$ vector, and $\overrightarrow{d}$ is an $n \times 1$ vector.
