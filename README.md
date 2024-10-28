@@ -200,7 +200,7 @@ $$
 
 for $i = 1, 2, \cdots, n$. This can be written in matrix form as:
 
-$$
+```math
 \begin{pmatrix}
 q_{x_1} & q_{y_1} & q_{z_1} \\\
 \vdots & \vdots & \vdots \\\
@@ -217,7 +217,7 @@ d_1 \\\
 \vdots \\\
 d_n
 \end{pmatrix}
-$$
+```
 
 Here, $\hat Q$ is an $n \times 3$ matrix, $\overrightarrow{m}$ is a $3 \times 1$ vector, and $\overrightarrow{d}$ is an $n \times 1$ vector.
 
