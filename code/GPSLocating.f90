@@ -22,8 +22,8 @@ program GPSLocating
     ! Allocate arrays
     allocate(v_QC1(N), v_QC2(N), v_QC3(N), v_d(N))
 
-    ! Input station coorv_dnates and v_dstances
-    print *, 'Enter the coorv_dnates (v_QC1, v_QC2, v_QC3) and v_dstance v_d for each station:'
+    ! Input station coordinates and dstance
+    print *, 'Enter the coordinates (v_QC1, v_QC2, v_QC3) and dstance v_d for each station:'
     do i = 1, N
         print *, 'Station ', i, ':'
         read *, v_QC1(i), v_QC2(i), v_QC3(i), v_d(i)
