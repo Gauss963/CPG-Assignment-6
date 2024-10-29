@@ -4,11 +4,17 @@ program GPSLocating
 
     integer, parameter :: dp = real64
     integer :: N, i, j, k, l, m, INFO
-    real(dp), allocatable :: v_QC1(:), v_QC2(:), v_QC3(:), v_d(:), v_d_FIXED(:)
-    real(dp) :: v_m(3), v_location(3)
-    real(dp), allocatable :: m_Q(:,:), m_QT(:,:), m_Q_FIXED(:,:)
+    ! real(dp), allocatable :: v_QC1(:), v_QC2(:), v_QC3(:), v_d(:), v_d_FIXED(:)
+    ! real(dp) :: v_m(3), v_location(3)
+    ! real(dp), allocatable :: m_Q(:,:), m_QT(:,:), m_Q_FIXED(:,:)
 
-    real(dp) :: m_QTQ(3, 3), m_QTQ_INVERSE(3, 3)
+    ! real(dp) :: m_QTQ(3, 3), m_QTQ_INVERSE(3, 3)
+
+    real, allocatable :: v_QC1(:), v_QC2(:), v_QC3(:), v_d(:), v_d_FIXED(:)
+    real :: v_m(3), v_location(3)
+    real, allocatable :: m_Q(:,:), m_QT(:,:), m_Q_FIXED(:,:)
+
+    real :: m_QTQ(3, 3), m_QTQ_INVERSE(3, 3)
 
     v_location = [20, 20, 20]
 
@@ -36,47 +42,46 @@ program GPSLocating
 
     allocate(m_Q(N, 3), m_QT(3, N), m_Q_FIXED(N, 3))
     do j = 1, N
-        m_Q(1, j) = v_QC1(j) ! (column, row) => (1, j) -> v_QC1(j)
-        m_Q(2, j) = v_QC2(j) ! Since FORTRAN is column-major
-        m_Q(3, j) = v_QC3(j) ! See `https://en.wikipedia.org/wiki/Row-_and_column-major_order`
+        m_Q(j, 1) = v_QC1(j) ! (column, row) => (1, j) -> v_QC1(j)
+        m_Q(j, 2) = v_QC2(j) ! Since FORTRAN is column-major
+        m_Q(j, 3) = v_QC3(j) ! See `https://en.wikipedia.org/wiki/Row-_and_column-major_order`
 
-        m_Q_FIXED(1, j) = v_QC1(j)
-        m_Q_FIXED(2, j) = v_QC2(j)
-        m_Q_FIXED(3, j) = v_QC3(j)
+        m_Q_FIXED(j, 1) = v_QC1(j)
+        m_Q_FIXED(j, 2) = v_QC2(j)
+        m_Q_FIXED(j, 3) = v_QC3(j)
     end do
-    ! Q initialized here. Print the matrix to check
+    ! Q FIXED initialized here. Print the matrix to check
     print *, 'Matrix Q FIXED:'
     do k = 1, N
-        print *, m_Q_FIXED(1, k), m_Q_FIXED(2, k), m_Q_FIXED(3, k)
+        print *, m_Q_FIXED(k, 1), m_Q_FIXED(k, 2), m_Q_FIXED(k, 3)
     end do
 
 
 
-    do i = 1, 1000
+    do i = 1, 100
         
         ! Update matrix Q
         do j = 1, N
             do k = 1, 3
-                m_Q(k, j) = v_location(k) - m_Q_FIXED(k, j)
+                m_Q(j, k) = v_location(k) - m_Q_FIXED(j, k)
             end do
         end do
 
         ! Update vector d
-        ! do m = 1, N
-        !     v_d(m) = v_d_FIXED(m)**2 - ( m_Q_FIXED(1, m) - v_location(1) )**2
-        !     v_d(m) = v_d(m)          - ( m_Q_FIXED(2, m) - v_location(2) )**2
-        !     v_d(m) = v_d(m)          - ( m_Q_FIXED(3, m) - v_location(3) )**2
-        !     v_d(m) = v_d(m) * 0.5
-        ! end do
         do m = 1, N
-            v_d(m) = v_d_FIXED(m)**2 - ( m_Q_FIXED(1, m) - v_location(1) )**2 &
-                                     - ( m_Q_FIXED(2, m) - v_location(2) )**2 &
-                                     - ( m_Q_FIXED(3, m) - v_location(3) )**2
+            v_d(m) = v_d_FIXED(m)**2 - ( m_Q_FIXED(m, 1) - v_location(1) )**2 &
+                                     - ( m_Q_FIXED(m, 2) - v_location(2) )**2 &
+                                     - ( m_Q_FIXED(m, 3) - v_location(3) )**2
             
             v_d(m) = v_d(m) * 0.5
         end do
-        print *, 'd is', v_d
+        print *, 'vector d = ', v_d
         print *, '---------------------------------------------------------------'
+
+        print *, 'Matrix Q:'
+        do k = 1, N
+            print *, m_Q(k, 1), m_Q(k, 2), m_Q(k, 3)
+        end do
 
 
 
@@ -84,18 +89,23 @@ program GPSLocating
         m_QT = transpose(m_Q)
         m_QTQ = matmul(m_QT, m_Q)
         
-        call matrix_inverse(3, m_QTQ, m_QTQ_INVERSE, INFO)
+        ! call matrix_inverse(3, m_QTQ, m_QTQ_INVERSE, INFO)
+        call MATRIXINV(m_QTQ, 3)
         
-        v_m = matmul(m_QTQ_INVERSE, matmul(m_QT, v_d))
+
+        v_m = matmul(matmul(m_QTQ, m_QT), v_d)
         
-        v_location = v_location - v_m
+        v_location = v_location + v_m
+
+        print *, 'vector m = ', v_m
 
 
 
 
         ! Check if \delta x, \delta y, \delta z \leq 10e-6
-        if (abs(v_location(1)) < 10e-6 .AND. abs(v_location(2)) < 10e-6 &
-            .AND. abs(v_location(3)) < 10e-6) then
+        if (abs(v_m(1)) < 10e-6 .AND. & 
+            abs(v_m(2)) < 10e-6 .AND. &
+            abs(v_m(3)) < 10e-6) then
             print *, 'Number of iteration is', i
             goto 42
         end if
