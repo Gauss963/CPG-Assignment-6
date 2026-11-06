@@ -21,8 +21,9 @@ subroutine xyfit(x, y, ndata, cept, slop, rms, r_cor, sdv)
     end do
 
 
-    r_cor=(sum*xysum-xsum*ysum)/sqrt( (sum*xxsum-xsum*xsum)*
-    +        (sum*yysum-ysum*ysum) )
+    r_cor = (sum*xysum-xsum*ysum) / &
+        sqrt((sum*xxsum-xsum*xsum) * &
+             (sum*yysum-ysum*ysum))
 
 
     xavg=xsum/sum
